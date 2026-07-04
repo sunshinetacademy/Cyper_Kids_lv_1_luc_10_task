@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تدريب المحاضرة العاشرة: الاستجابة للحوادث الرقمية | حراس المستقبل الرقمي</title>
+    <style>
+        :root {
+            --primary: #dc2626; --secondary: #ef4444; --accent: #f97316;
+            --success: #10b981; --warning: #f59e0b; --danger: #ef4444;
+            --bg: #F8F9FA; --card: #FFFFFF; --text: #1e293b; --text-light: #64748b;
+            --radius: 16px; --shadow: 0 10px 30px rgba(0,0,0,0.08);
+            --calm: #dbeafe; --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: var(--font-main);
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px; margin: 0 auto; background: var(--card);
+            border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden;
+        }
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
+            color: white; padding: 24px; text-align: center; position: relative;
+        }
+        /* 🖼️ مكان اللوجو: حط كود Base64 الخاص بشعار الأكاديمية هنا في src */
+        .logo-box {
+            width: 90px; height: 90px; background: rgba(255,255,255,0.25);
+            border-radius: 50%; margin: 0 auto 12px; display: flex;
+            align-items: center; justify-content: center; font-size: 36px;
+            border: 3px solid rgba(255,255,255,0.4); cursor: pointer; transition: 0.3s;
+        }
+        .logo-box:hover { transform: scale(1.05); background: rgba(255,255,255,0.35); }
+        .logo-box img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: none; }
+        h1 { font-size: 26px; margin-bottom: 6px; }
+        .subtitle { opacity: 0.95; font-size: 15px; }
+
+        .tabs {
+            display: flex; flex-wrap: wrap; gap: 8px; padding: 16px;
+            background: #fef2f2; border-bottom: 1px solid #fecaca;
+        }
+        .tab-btn {
+            flex: 1; min-width: 140px; padding: 12px; border: none; background: white;
+            border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.25s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .tab-btn:hover { transform: translateY(-2px); }
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--accent), var(--danger)); color: white;
+            box-shadow: 0 4px 12px rgba(239,68,68,0.3);
+        }
+
+        .content-area { padding: 24px; min-height: 450px; }
+        .section { display: none; animation: slideIn 0.4s ease; }
+        .section.active { display: block; }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h2 { margin-bottom: 16px; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        .desc { color: var(--text-light); margin-bottom: 20px; line-height: 1.6; }
+
+        .card {
+            background: #fef2f2; border: 2px solid #fecaca;
+            border-radius: 12px; padding: 18px; margin-bottom: 16px; transition: 0.2s;
+        }
+        .btn {
+            padding: 10px 20px; border: none; border-radius: 8px; font-weight: 600;
+            cursor: pointer; transition: 0.2s;
+        }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(220,38,38,0.4); }
+        .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+        .btn-outline:hover { background: #fef2f2; }
+
+        .feedback {
+            padding: 12px; border-radius: 8px; margin-top: 12px; font-weight: 500; display: none;
+        }
+        .feedback.success { background: #d4edda; color: #155724; display: block; }
+        .feedback.warning { background: #fff3cd; color: #856404; display: block; }
+        .feedback.error { background: #f8d7da; color: #721c24; display: block; }
+        .feedback.info { background: #dbeafe; color: #1e40af; display: block; border-right: 4px solid var(--calm); }
+
+        .quiz-options { display: grid; gap: 10px; margin-top: 12px; }
+        .quiz-option {
+            padding: 14px; background: white; border: 2px solid #e2e8f0;
+            border-radius: 10px; cursor: pointer; transition: 0.2s;
+        }
+        .quiz-option:hover { border-color: var(--primary); background: #f8fafc; }
+        .quiz-option.selected { border-color: var(--primary); background: #fee2e2; }
+        .quiz-option.correct { border-color: var(--success); background: #d4edda; }
+        .quiz-option.wrong { border-color: var(--danger); background: #f8d7da; }
+
+        .quick-btns {
+            display: flex; gap: 20px; justify-content: center; margin-top: 24px;
+        }
+        .quick-btn {
+            flex: 1; padding: 20px; border: none; border-radius: 16px; font-size: 18px;
+            font-weight: bold; cursor: pointer; transition: 0.2s;
+        }
+        .quick-btn.yes { background: var(--success); color: white; }
+        .quick-btn.no { background: var(--danger); color: white; }
+        .quick-btn:hover { transform: scale(1.02); opacity: 0.9; }
+
+        .build-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+        .build-item {
+            padding: 16px; background: white; border-radius: 12px;
+            border: 2px dashed #cbd5e1; text-align: center; cursor: pointer; transition: 0.2s;
+        }
+        .build-item:hover { border-style: solid; border-color: var(--warning); }
+        .build-item.active {
+            background: #fff7ed; border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 4px 12px rgba(249,115,22,0.2);
+        }
+        .build-icon { font-size: 2.2em; margin-bottom: 8px; }
+
+        .stats {
+            display: flex; justify-content: space-around; background: #fef2f2;
+            padding: 16px; border-radius: 12px; margin-top: 20px;
+        }
+        .stat-box { text-align: center; }
+        .stat-box .num { font-size: 28px; font-weight: bold; color: var(--primary); }
+        .stat-box .label { font-size: 13px; color: var(--text-light); }
+
+        .checklist { list-style: none; padding: 0; }
+        .checklist li {
+            padding: 12px; background: white; border-radius: 10px; margin-bottom: 10px;
+            display: flex; align-items: center; gap: 12px; font-size: 1em;
+            border: 2px solid #e2e8f0; transition: 0.2s; cursor: pointer;
+        }
+        .checklist li.checked { border-color: var(--success); background: #f0fdf4; }
+        .checklist li::before { content: '🆘'; font-size: 1.2em; }
+        .checklist li.checked::before { content: '✅'; color: var(--success); }
+
+        .tip-card {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            border-right: 4px solid var(--calm);
+            padding: 14px; border-radius: 10px; margin: 12px 0; font-size: 1.05em;
+        }
+        .tip-card strong { color: #1e40af; }
+
+        .alert-list { display: grid; gap: 10px; margin-top: 12px; }
+        .alert-item {
+            padding: 14px; background: white; border: 2px solid #e2e8f0;
+            border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+        }
+        .alert-item:hover { border-color: var(--primary); }
+        .alert-item.early { border-color: var(--warning); background: #fffbeb; }
+        .alert-item.critical { border-color: var(--danger); background: #fef2f2; }
+        .alert-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.85em; font-weight: bold; }
+        .badge-warning { background: var(--warning); color: white; }
+        .badge-danger { background: var(--danger); color: white; }
+
+        .breath-box {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            border-radius: 16px; padding: 20px; text-align: center; margin: 15px 0;
+            animation: pulse 3s infinite;
+        }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
+        .breath-text { font-size: 1.2em; font-weight: 700; color: var(--primary); margin-bottom: 10px; }
+        .breath-steps { display: flex; justify-content: center; gap: 15px; font-size: 0.95em; }
+
+        @media (max-width: 768px) {
+            .tabs { flex-direction: column; } .tab-btn { min-width: 100%; }
+            .quick-btns { flex-direction: column; gap: 12px; } 
+            .build-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <!-- 🖼️ مكان اللوجو: حط كود Base64 الخاص بشعار الأكاديمية هنا في src -->
+    <div class="logo-box" onclick="document.getElementById('logo-img').style.display='block'; this.style.background='none'">
+      <span>☀️</span>
+      <img id="logo-img" src="" alt="شعار الأكاديمية">
+    </div>
+    <h1> تدريب المحاضرة العاشرة - الجديدة</h1>
+    <p class="subtitle">الاستجابة للحوادث الرقمية | خطة الطوارئ الذكية | آدم (13) & محمد (11)</p>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="detector">🔍 كاشف الإنذارات</button>
+    <button class="tab-btn" data-tab="response">⚡ بروتوكول الـ 4R</button>
+    <button class="tab-btn" data-tab="quiz">📝 اختبار الطوارئ (15 سؤال)</button>
+    <button class="tab-btn" data-tab="quick">⚡ رد الفعل السريع</button>
+    <button class="tab-btn" data-tab="build">🛡️ ابنِ خطة تعافيك</button>
+  </nav>
+
+  <main class="content-area">
+    
+    <!-- 🔍 القسم 1: كاشف الإنذارات المبكرة -->
+    <section id="detector" class="section active">
+      <h2>🔍 كاشف الإنذارات: علامة مبكرة أم خطر حقيقي؟</h2>
+      <p class="desc">اضغط على كل إنذار لتحديد إذا كان علامة مبكرة تستدعي الانتباه أو خطرًا حقيقيًا يتطلب تدخلًا فوريًا:</p>
+      
+      <div class="card">
+        <div class="alert-list" id="alert-list">
+          <div class="alert-item" onclick="checkAlert(this, 'early')" data-tip="إشعار دخول من جهاز جديد قد يكون أنت أو اختراق. تحقق فورًا عبر 2FA أو سجل الدخول">⚠️ إشعار: 'دخول جديد من جهاز غير معروف'</div>
+          <div class="alert-item" onclick="checkAlert(this, 'critical')" data-tip="تغير الإيميل/الهاتف المرتبط بدون إذنك = اختراق مؤكد. غيّر كلمة السر فورًا من جهاز آمن">🚨 كلمة السر مش شغالة فجأة + الإيميل المرتبط اتغير</div>
+          <div class="alert-item" onclick="checkAlert(this, 'early')" data-tip="نشاط غير معتاد قد يكون تجربة من صديق أو اختراق. راجع سجل النشاط فورًا">⚠️ أصدقاء بيسألوا عن رسائل غريبة جت من حسابك</div>
+          <div class="alert-item" onclick="checkAlert(this, 'critical')" data-tip="اختفاء عناصر أو فلوس = اختراق نشط. افصل الجهاز، غيّر كلمة السر، أبلغ الدعم فورًا">🚨 عناصر في اللعبة أو فلوس اختفت من غير سبب</div>
+        </div>
+        <div id="alert-feedback" class="feedback"></div>
+        <div id="alert-tip" class="tip-card" style="display:none;"></div>
+      </div>
+
+      <div class="breath-box">
+        <div class="breath-text">🧘 خد نفس قبل ما تتصرف</div>
+        <div class="breath-steps">
+          <span>1️⃣ خد نفس عميق</span>
+          <span>2️⃣ احبس 3 ثواني</span>
+          <span>3️⃣ اخرج ببطء</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ⚡ القسم 2: بروتوكول الـ 4R للاستجابة -->
+    <section id="response" class="section">
+      <h2>⚡ بروتوكول الـ 4R: خريطة التعافي من الاختراق</h2>
+      <p class="desc">رتّب الخطوات بالأولوية الصحيحة في حالة الطوارئ الرقمية:</p>
+      
+      <div class="card">
+        <ul class="checklist" id="response-list">
+          <li onclick="toggleResponse(this)" data-step="1" data-tip="الهدوء يمنعك من الضغط على لينكات نصابة أو دفع فلوس لمحتالين">🧘 1. اهدأ وخد نفس (الذعر عدو الأمان)</li>
+          <li onclick="toggleResponse(this)" data-step="2" data-tip="تغير كلمة السر من جهاز آمن (موبايلك) يقطع وصول المخترق فورًا">🔐 2. غيّر كلمة السر من جهاز آخر آمن</li>
+          <li onclick="toggleResponse(this)" data-step="3" data-tip="لقطة الشاشة = دليل رقمي. احفظها قبل التبليغ عشان الدعم الرسمي يثبت الواقعة">📸 3. احفظ لقطة شاشة للإنذار أو النشاط الغريب</li>
+          <li onclick="toggleResponse(this)" data-step="4" data-tip="الدعم الرسمي بيملك الصلاحيات. النصاب في الشات بيملك 'خدعة جديدة'">📢 4. أبلغ الدعم الرسمي للمنصة (مش نصاب في الشات!)</li>
+          <li onclick="toggleResponse(this)" data-step="5" data-tip="2FA + مراجعة الأذونات تمنع التكرار. التعافي مش بس استعادة... ده وقاية">🔄 5. فعّل 2FA وراجع الأذونات لمنع التكرار</li>
+          <li onclick="toggleResponse(this)" data-step="X" data-tip="⚠️ دفع الفدية بيخليك 'هدفًا' أكتر. النصاب بيستهدف الخايف!">💸 ممنوع: تدفع فلوس لأي حد بيقولك 'أسترجع حسابك'</li>
+        </ul>
+        <div id="response-feedback" class="feedback"></div>
+        <div id="response-tip" class="tip-card" style="display:none;"></div>
+      </div>
+    </section>
+
+    <!-- 📝 القسم 3: اختبار الاستجابة للحوادث -->
+    <section id="quiz" class="section">
+      <h2>📝 اختبار الاستجابة للحوادث (15 سؤال)</h2>
+      <p class="desc">اختبر فهمك. <strong>الإجابات الصحيحة تظهر في أماكن عشوائية كل مرة!</strong></p>
+      
+      <div id="quiz-container">
+        <div class="card" id="quiz-card">
+          <h3 id="q-text">جاري تحميل السؤال...</h3>
+          <div class="quiz-options" id="q-options"></div>
+        </div>
+        <div class="feedback" id="q-feedback"></div>
+        <div id="q-explanation" class="feedback info" style="display:none;"></div>
+        <div style="display:flex; justify-content:space-between; margin-top:16px;">
+          <button class="btn btn-outline" id="q-prev" disabled>السابق</button>
+          <span id="q-counter">سؤال 1 / 15</span>
+          <button class="btn btn-primary" id="q-next" disabled>التالي</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ⚡ القسم 4: رد الفعل السريع - طوارئ -->
+    <section id="quick" class="section">
+      <h2>⚡ رد الفعل السريع (حارس ✅ / ذعر ⛔)</h2>
+      <p class="desc">ستظهر جملة عن موقف طوارئ رقمي. <strong>الإجابات عشوائية وغير متوقعة!</strong> اختر فورًا.</p>
+      
+      <div class="card" style="text-align:center; padding:30px; font-size:19px; font-weight:bold; background:#fff; border-radius:16px;" id="quick-q">
+        اضغط "ابدأ" لتفعيل وضع الطوارئ
+      </div>
+      
+      <div class="quick-btns">
+        <button class="quick-btn yes" onclick="answerQuick(true)">✅ تصرف حارس</button>
+        <button class="quick-btn no" onclick="answerQuick(false)">⛔ تصرف ذعري</button>
+      </div>
+      <div class="feedback" id="quick-feedback"></div>
+      <div id="quick-explanation" class="feedback info" style="display:none;"></div>
+      <div class="stats">
+        <div class="stat-box"><div class="num" id="quick-correct">0</div><div class="label">إجابات صحيحة</div></div>
+        <div class="stat-box"><div class="num" id="quick-speed">0s</div><div class="label">متوسط السرعة</div></div>
+        <button class="btn btn-primary" onclick="startQuick()" style="padding:10px 24px;">🔄 إعادة</button>
+      </div>
+    </section>
+
+    <!-- 🛡️ القسم 5: ابنِ خطة تعافيك -->
+    <section id="build" class="section">
+      <h2>🛡️ ابنِ خطة تعافيك من الاختراق</h2>
+      <p class="desc">اختر 5 عناصر عشان تبني خطة تعافي شخصية تحميك في أي طوارئ رقمية:</p>
+      
+      <div class="build-grid" id="build-items">
+        <div class="build-item" data-id="1" data-tip="كلمة سر فريدة + 2FA = أقوى خط دفاع ضد الاختراق المتكرر">🔐 كلمة سر قوية + 2FA على كل حساب مهم</div>
+        <div class="build-item" data-id="2" data-tip="الأدلة الرقمية (لقطات الشاشة) بتساعد الدعم الرسمي يثبت الواقعة ويستعيد حسابك أسرع">📸 حفظ لقطة شاشة لأي إنذار غريب</div>
+        <div class="build-item" data-id="3" data-tip="الدعم الرسمي بيملك الصلاحيات. التبليغ السريع بيقلل الخسائر">📢 معرفة روابط الدعم الرسمي لأهم تطبيقاتك</div>
+        <div class="build-item" data-id="4" data-tip="الهدوء يمنعك من الوقوع في فخ النصابين اللي بيستغلوا ذعرك">🧘 تمرين هدوء سريع: خد نفس قبل أي تصرف</div>
+        <div class="build-item" data-id="5" data-tip="ولي الأمر أو شخص موثوق بيقدر يساعدك تتخذ قرار صحيح في لحظة الضغط">👥 رقم شخص موثوق تلجأ له في الطوارئ</div>
+        <div class="build-item" data-id="6" data-tip="مراجعة الأذونات دوريًا بتقطع وصول التطبيقات المشبوهة لبياناتك">👁️ مراجعة أذونات التطبيقات كل 3 شهور</div>
+        <div class="build-item" data-id="7" data-tip="الفصل السريع للجهاز عن الإنترنت بيوقف الاختراق النشط فورًا">🔌 معرفة إزاي تفصل الجهاز عن الإنترنت فورًا</div>
+      </div>
+      
+      <div id="build-tip" class="tip-card" style="margin-top:15px; display:none;"></div>
+      
+      <div id="build-result" style="margin-top:20px; text-align:center; display:none;">
+        <div class="card" style="background:linear-gradient(135deg, #fef2f2, #fecaca); color:#991b1b; font-size:20px; font-weight:bold; padding:20px; border-radius:16px; border: 3px dashed var(--danger);">
+          🎉 خطة تعافيك جاهزة!<br>
+          <span style="font-size:0.7em; font-weight:normal; display:block; margin-top:5px;">"أهدأ... أتصرف بخطة... أستعيد السيطرة"</span>
+          <span style="font-size:14px; font-weight:bold; color:var(--primary); display:block; margin-top:8px;">أنت الآن مستجيب رقمي معتمد 🏆</span>
+        </div>
+        <button class="btn btn-primary" style="margin-top:12px;" onclick="alert('تم حفظ خطة تعافيك! طبّقها لو حصل أي موقف طوارئ 🔐')">💾 حفظ الخطة</button>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  // 📌 إدارة التنقل بين الأقسام
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById(btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // 🔍 1. كاشف الإنذارات
+  function checkAlert(element, type) {
+    const tip = element.dataset.tip;
+    element.classList.toggle(type);
+    
+    const tipBox = document.getElementById('alert-tip');
+    tipBox.textContent = `💡 ${tip}`;
+    tipBox.style.display = 'block';
+    
+    const allAlerts = document.querySelectorAll('#alert-list .alert-item');
+    const checkedCount = Array.from(allAlerts).filter(a => a.classList.contains('early') || a.classList.contains('critical')).length;
+    const criticalCount = Array.from(allAlerts).filter(a => a.classList.contains('critical')).length;
+    
+    const feedback = document.getElementById('alert-feedback');
+    if (checkedCount < 4) {
+      feedback.className = 'feedback warning';
+      feedback.textContent = `💡 اختار كل الإنذارات (${checkedCount}/4)`;
+    } else {
+      if (criticalCount === 2) {
+        feedback.className = 'feedback success';
+        feedback.textContent = `🎉 ممتاز! فرّقت صح بين 2 علامة مبكرة و2 خطر حقيقي!`;
+      } else {
+        feedback.className = 'feedback error';
+        feedback.textContent = `⚠️ فيه خطأ. تذكر: الخطر الحقيقي = كلمة سر مش شغالة + بيانات اتغيرت + فلوس اختفت.`;
+      }
+    }
+  }
+
+  // ⚡ 2. بروتوكول الـ 4R
+  function toggleResponse(element) {
+    const tip = element.dataset.tip;
+    const step = element.dataset.step;
+    element.classList.toggle('checked');
+    
+    const tipBox = document.getElementById('response-tip');
+    if (element.classList.contains('checked')) {
+      tipBox.textContent = `💡 ${tip}`;
+      tipBox.style.display = 'block';
+    }
+    
+    const allSteps = document.querySelectorAll('#response-list li');
+    const checkedCorrect = Array.from(allSteps).filter(s => s.classList.contains('checked') && s.dataset.step !== 'X').length;
+    const checkedWrong = Array.from(allSteps).filter(s => s.classList.contains('checked') && s.dataset.step === 'X').length;
+    
+    const feedback = document.getElementById('response-feedback');
+    if (checkedWrong > 0) {
+      feedback.className = 'feedback error';
+      feedback.textContent = `⚠️ اخترت خطوة ممنوعة (دفع فلوس). النصاب بيستهدف الخايف!`;
+    } else if (checkedCorrect >= 4) {
+      feedback.className = 'feedback success';
+      feedback.textContent = `🎉 ممتاز! رتّبت ${checkedCorrect} خطوة صحيحة. خطة استجابتك جاهزة!`;
+    } else {
+      feedback.className = 'feedback warning';
+      feedback.textContent = `💡 حاول تكمل: اختر 4 خطوات من بروتوكول الـ 4R.`;
+    }
+  }
+
+  // 📝 3. بنك الأسئلة (15 سؤال) - خلط الخيارات عشوائيًا
+  const quizData = [
+    { q: "ما هو أول تصرف صحيح لو لقيت كلمة سر حسابك مش شغالة؟", opts: ["أدفع فلوس لحد في الشات عشان يسترجعها", "أهدأ، أغيّر كلمة السر من جهاز آمن، وأبلغ الدعم الرسمي", "أحذف الحساب نهائيًا", "أرد على النصاب وأشتتمه"], ans: 1, explanation: "الهدوء + التغيير من جهاز آمن + التبليغ الرسمي = بروتوكول استجابة ذكي." },
+    { q: "ليه لقطة الشاشة (Screenshot) مهمة في حالة الاختراق؟", opts: ["عشان أتفرج عليها بعدين", "عشان تكون دليل رقمي يساعد الدعم الرسمي يثبت الواقعة", "عشان أشاركها على السوشيال ميديا", "مش مهمة"], ans: 1, explanation: "الأدلة الرقمية بتسرع عملية الاستعادة وبتثبت إنك ضحية مش متسبب." },
+    { q: "إيه التصرف الخطأ لو جالك لينك 'استعادة حساب بمقابل' في شات اللعبة؟", opts: ["أتجاهله وأبلغ عنه", "أضغط عليه وأدفع عشان أسترجع حسابي بسرعة", "أحفظ لقطة شاشة وأبلغ الدعم الرسمي", "أكلم ولي الأمر"], ans: 1, explanation: "دفع الفدية بيخليك 'هدفًا' أكتر. النصاب بيستغل الذعر عشان يسرق أكتر." },
+    { q: "ليه مهم تغير كلمة السر من جهاز 'آخر' مش من الجهاز المشبوه؟", opts: ["عشان الجهاز التاني شكله أحسن", "عشان الجهاز المشبوه ممكن يكون فيه برنامج تجسس بيسجل كل حاجة بتكتبها", "عشان كده أسرع", "مش فرق"], ans: 1, explanation: "لو الجهاز مخترق، أي كلمة سر جديدة هتتسجل وتُسرّب فورًا. الجهاز الآمن ضروري." },
+    { q: "إيه معنى '2FA' وليه مهم في منع الاختراق المتكرر؟", opts: ["كلمة سر تانية", "المصادقة بخطوتين: حاجة تعرفها + حاجة تملكها (موبايلك)", "تطبيق مضاد فيروسات", "رقم سري للبنك"], ans: 1, explanation: "الـ 2FA تضيف طبقة حماية حقيقية. حتى لو النصاب عرف كلمة سرك، محتاج كود من موبايلك عشان يدخل." },
+    { q: "لو أصدقاء بيسألوا عن رسائل غريبة جت من حسابك، إيه أول خطوة؟", opts: ["أرد عليهم وأعتذر", "أغيّر كلمة السر فورًا وأراجع النشاط الحديث", "أحذف الحساب", "أتجاهلهم"], ans: 1, explanation: "تغير كلمة السر يقطع وصول المخترق. مراجعة النشاط بتساعد تفهم إيه اللي حصل." },
+    { q: "إيه الفرق بين 'إشعار دخول من جهاز جديد' و 'كلمة سر مش شغالة'؟", opts: ["مفيش فرق", "الإشعار علامة مبكرة (قد تكون أنت)، كلمة السر مش شغالة خطر حقيقي (اختراق مؤكد)", "الإشعار أخطر", "كلمة السر مش شغالة عادية"], ans: 1, explanation: "الإشعار بيحتاج تحقق، كلمة السر المش شغالة مع تغير بيانات = اختراق نشط يتطلب تدخل فوري." },
+    { q: "ليه التبليغ للدعم الرسمي أهم من محاولة 'استرجاع' عن طريق غريب؟", opts: ["عشان الدعم الرسمي شكله رسمي", "عشان الدعم الرسمي بيملك الصلاحيات والقنوات الآمنة. الغريب في الشات بيملك 'نصب' جديد", "عشان الدعم الرسمي أسرع", "مش فرق"], ans: 1, explanation: "الجهات الرسمية فقط ليها صلاحية استعادة الحسابات بأمان. أي حد تاني بيحاول يستغل الموقف." },
+    { q: "إيه التصرف الصحيح لو اختفت فلوس أو عناصر من حساب اللعبة؟", opts: ["أدفع عشان أسترجعها", "أفصل الجهاز، أغيّر كلمة السر، أحفظ لقطة شاشة، وأبلغ الدعم الرسمي", "أحذف اللعبة", "أشتري عناصر أكتر"], ans: 1, explanation: "الفصل السريع يوقف الاختراق النشط. التبليغ الرسمي بيساعد في الاستعادة ومنع التكرار." },
+    { q: "ليه 'الهدوء' هو أول خطوة في بروتوكول الاستجابة؟", opts: ["عشان ماما مش تتعصب", "عشان الذعر بيخليك تضغط على لينكات غريبة، تدفع فلوس، وتشارك بيانات... وتزيد المشكلة", "عشان تبطئ الإنترنت", "مش مهم"], ans: 1, explanation: "الذعر عدو القرار الصحيح. الهدوء بيخليك تطبق الخطة بذكاء بدل ما تزيد الخسائر." },
+    { q: "إيه أهم حاجة تعملها بعد ما تستعيد حسابك؟", opts: ["أفرح وأنسى", "أراجع الإعدادات، أفعّل 2FA، وأراجع الأذونات لمنع التكرار", "أغير اسمي", "أحذف كل الأصدقاء"], ans: 1, explanation: "الاستعادة مش نهاية... الوقاية من التكرار جزء أساسي من بروتوكول التعافي." },
+    { q: "هل من الآمن مشاركة كلمة السر الجديدة مع 'صديق مقرب' عشان يساعدك؟", opts: ["أيوه طالما صديقي", "لا، كلمة السر سرية حتى في الطوارئ. استخدم قنوات رسمية أو اسأل ولي أمر", "مش مهم", "أغيرها بعدين"], ans: 1, explanation: "مشاركة كلمة السر حتى في الطوارئ بتفتح باب جديد للاختراق. الأمان الشخصي مسؤولية فردية." },
+    { q: "إيه التصرف الصحيح لو لقيت إشعار 'دخول من دولة غريبة'؟", opts: ["أتجاهله عشان مأتخضش", "أتحقق فورًا: هل أنا اللي دخلت؟ لو لأ، أغيّر كلمة السر وأبلغ", "أرد على الإشعار", "أحذف التطبيق"], ans: 1, explanation: "التحقق السريع بيمنع الاختراق من التطور. الإهمال بيخلي المخترق ياخد وقت أكتر." },
+    { q: "ليه مراجعة أذونات التطبيقات كل 3 شهور مهمة؟", opts: ["عشان شكلها تقني", "عشان تطبيقات قديمة أو مشبوهة ممكن تسحب بياناتك أو تنشر باسمك دون علمك", "عشان تزيد مساحة التخزين", "مش لازم"], ans: 1, explanation: "الأذونات القديمة ثغرة صامتة. المراجعة الدورية بتقطع الاتصال بخدمات مش ضرورية." },
+    { q: "إيه أفضل نهج لتعلم الاستجابة للحوادث مستمرًا؟", opts: ["أكتفي بالمحاضرة دي", "أتدرب على سيناريوهات، أحفظ جهات دعم رسمية، وأشارك التعلم مع غيري", "أنتظر حتى أتعرض لمشكلة", "أحفظ القواعد بس"], ans: 1, explanation: "التهديدات بتتطور. التدريب العملي والمشاركة بيبني مرونة رقمية حقيقية." }
+  ];
+
+  let currentQ = 0, shuffledQ = [], score = 0;
+  
+  function shuffleOptionsWithAnswer(question) {
+    let options = question.opts.map((opt, idx) => ({ text: opt, isCorrect: idx === question.ans }));
+    for (let i = options.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [options[i], options[j]] = [options[j], options[i]];
+    }
+    return { shuffledOpts: options.map(opt => opt.text), correctIndex: options.findIndex(opt => opt.isCorrect) };
+  }
+  
+  function initQuiz() {
+    shuffledQ = [...quizData].sort(() => Math.random() - 0.5);
+    currentQ = 0; score = 0; renderQ();
+  }
+  function renderQ() {
+    if(currentQ >= shuffledQ.length) {
+      document.getElementById('quiz-card').innerHTML = `<h3>🎉 انتهى اختبار الطوارئ! نتيجتك: ${score}/15</h3><p>أنت جاهز لأي موقف رقمي! 🛡️</p>`;
+      document.getElementById('q-counter').textContent = ''; return;
+    }
+    const originalQ = shuffledQ[currentQ];
+    const { shuffledOpts, correctIndex } = shuffleOptionsWithAnswer(originalQ);
+    
+    document.getElementById('q-text').textContent = originalQ.q;
+    const optsDiv = document.getElementById('q-options'); optsDiv.innerHTML = '';
+    shuffledOpts.forEach((opt, i) => {
+      const btn = document.createElement('div'); btn.className = 'quiz-option';
+      btn.textContent = opt; btn.onclick = () => selectAnswer(i, correctIndex, btn, originalQ.explanation); optsDiv.appendChild(btn);
+    });
+    document.getElementById('q-counter').textContent = `سؤال ${currentQ + 1} / ${shuffledQ.length}`;
+    document.getElementById('q-prev').disabled = currentQ === 0;
+    document.getElementById('q-next').disabled = true;
+    document.getElementById('q-feedback').style.display = 'none';
+    document.getElementById('q-explanation').style.display = 'none';
+  }
+  function selectAnswer(selected, correct, btn, explanation) {
+    document.querySelectorAll('.quiz-option').forEach(b => b.classList.remove('selected', 'correct', 'wrong'));
+    btn.classList.add('selected'); const fb = document.getElementById('q-feedback'); const exp = document.getElementById('q-explanation');
+    if(selected === correct) {
+      btn.classList.add('correct'); fb.className = 'feedback success'; fb.textContent = '✅ إجابة صحيحة! أحسنت.';
+      exp.textContent = `💡 ${explanation}`; score++;
+    } else {
+      btn.classList.add('wrong'); document.querySelectorAll('.quiz-option')[correct].classList.add('correct');
+      fb.className = 'feedback error'; fb.textContent = '❌ إجابة خاطئة. راجع الشرح.';
+      exp.textContent = `💡 ${explanation}`;
+    }
+    fb.style.display = 'block'; exp.style.display = 'block';
+    document.getElementById('q-next').disabled = false;
+  }
+  document.getElementById('q-prev').onclick = () => { if(currentQ > 0) { currentQ--; renderQ(); } };
+  document.getElementById('q-next').onclick = () => { currentQ++; renderQ(); };
+  initQuiz();
+
+  // ⚡ 4. رد الفعل السريع - إجابات عشوائية غير متوقعة
+  const quickBaseData = [
+    { q: "أغيّر كلمة السر من موبايلي (جهاز آمن) بعد ما لقيتها مش شغالة في اللابتوب.", correctAns: true, explanation: "التغيير من جهاز آمن يقطع وصول المخترق فورًا." },
+    { q: "أدفع فلوس لحد في الشات بيقولي 'أسترجع حسابك في 5 دقائق'.", correctAns: false, explanation: "دفع الفدية بيخليك هدف للنصاب. الدعم الرسمي مجاني وآمن." },
+    { q: "أحفظ لقطة شاشة لإشعار 'دخول غريب' قبل ما أبلغ الدعم.", correctAns: true, explanation: "الأدلة الرقمية بتسرع الاستعادة وبتثبت الواقعة." },
+    { q: "أرد على النصاب وأشتتمه عشان أعلمه درس.", correctAns: false, explanation: "الرد بيغذي النصاب وبيديك فرصة للاستغلال. التبليغ والحجب أحسن." },
+    { q: "أفصل الإنترنت فورًا لو حسيت باختراق نشط في الجهاز.", correctAns: true, explanation: "الفصل السريع بيوقف تسريب البيانات أو التحكم عن بعد." },
+    { q: "أشارك كلمة السر الجديدة مع صديقي عشان يساعدني أراجع الإعدادات.", correctAns: false, explanation: "كلمة السر سرية حتى في الطوارئ. اسأل ولي أمر أو استخدم قنوات رسمية." },
+    { q: "أراجع أذونات التطبيقات وألغي الوصول للتطبيقات القديمة كل 3 شهور.", correctAns: true, explanation: "المراجعة الدورية بتقطع التسريب المحتمل لبياناتك." },
+    { q: "أهدأ وخد نفس قبل ما أتصرف في موقف طوارئ رقمي.", correctAns: true, explanation: "الهدوء بيخليك تطبق الخطة بذكاء بدل ما تزيد الخسائر." },
+    { q: "أحذف حسابي نهائيًا لو لقيت كلمة السر مش شغالة.", correctAns: false, explanation: "الحذف بيضيع البيانات للأبد. الاستعادة تحفظ البصمة وتوقف النصاب." },
+    { q: "أبلغ الدعم الرسمي للمنصة عبر الموقع الرسمي (مش لينك في شات).", correctAns: true, explanation: "الدعم الرسمي بيملك الصلاحيات. اللينكات في الشات غالبًا نصابة." }
+  ];
+  
+  let qIdx = 0, qCorrect = 0, qStartTime = 0, qTotalTime = 0, qCount = 0;
+  let quickQuestions = [];
+  
+  function prepareQuickQuestions() { quickQuestions = [...quickBaseData].sort(() => Math.random() - 0.5); }
+  
+  function startQuick() {
+    qIdx = 0; qCorrect = 0; qTotalTime = 0; qCount = 0;
+    document.getElementById('quick-correct').textContent = '0';
+    document.getElementById('quick-speed').textContent = '0s';
+    prepareQuickQuestions(); loadQuickQ();
+  }
+  function loadQuickQ() {
+    if(qIdx >= quickQuestions.length) {
+      document.getElementById('quick-q').textContent = `🏁 انتهى! إجابات صحيحة: ${qCorrect}/${quickQuestions.length}`;
+      document.getElementById('quick-feedback').style.display = 'none';
+      document.getElementById('quick-explanation').style.display = 'none';
+      return;
+    }
+    document.getElementById('quick-q').textContent = quickQuestions[qIdx].q;
+    document.getElementById('quick-feedback').style.display = 'none';
+    document.getElementById('quick-explanation').style.display = 'none';
+    qStartTime = Date.now();
+  }
+  function answerQuick(userAns) {
+    const q = quickQuestions[qIdx]; const real = q.correctAns;
+    const fb = document.getElementById('quick-feedback'); const exp = document.getElementById('quick-explanation');
+    const time = (Date.now() - qStartTime) / 1000; qTotalTime += time; qCount++;
+    if(userAns === real) { qCorrect++; fb.className = 'feedback success'; fb.textContent = `✅ تصرف حارس! (${time.toFixed(1)}ث)`; exp.textContent = `💡 ${q.explanation}`; }
+    else { fb.className = 'feedback error'; fb.textContent = `⚠️ تصرف ذعري. الصواب: ${real ? 'حارس' : 'يتجنب الخطر'}`; exp.textContent = `💡 ${q.explanation}`; }
+    fb.style.display = 'block'; exp.style.display = 'block';
+    document.getElementById('quick-correct').textContent = qCorrect;
+    document.getElementById('quick-speed').textContent = `${(qTotalTime/qCount).toFixed(1)}s`;
+    setTimeout(() => { qIdx++; loadQuickQ(); }, 2000);
+  }
+  startQuick();
+
+  // 🛡️ 5. ابنِ خطة تعافيك
+  const buildItems = document.querySelectorAll('.build-item');
+  let activeBuild = new Set();
+  const requiredForSecure = 5;
+  buildItems.forEach(item => {
+    item.addEventListener('click', () => {
+      const id = item.dataset.id; const tip = item.dataset.tip; const tipBox = document.getElementById('build-tip');
+      if(activeBuild.has(id)) { activeBuild.delete(id); item.classList.remove('active'); tipBox.style.display = 'none'; }
+      else { activeBuild.add(id); item.classList.add('active'); tipBox.textContent = `💡 ${tip}`; tipBox.style.display = 'block'; }
+      document.getElementById('build-result').style.display = activeBuild.size >= requiredForSecure ? 'block' : 'none';
+    });
+  });
+</script>
+
+</body>
+</html>
